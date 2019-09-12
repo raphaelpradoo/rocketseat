@@ -1,0 +1,13 @@
+req: representa todos os dados da requisicao
+res: utilizado para retornar uma resposta ao cliente
+
+Tipos de Parametros
+Query Params = ?teste=1
+Route Params = /users/1
+Request Body = { "name": "Raphael", "email": "raphael@hotmail.com" }
+
+CRUD - Create, Read, Update, Delete
+
+Middleware
+Funcao que recebe os parametros req e res e manipula os dados
+da requisicao e resposta de alguma forma
