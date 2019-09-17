@@ -31,7 +31,7 @@ class Mail {
         extname: '.hbs',
       }),
       viewPath,
-      extname: '.hbs',
+      extName: '.hbs',
     }));
 
     //console.log('Path2: ' + viewPath);
