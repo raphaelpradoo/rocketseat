@@ -8,7 +8,7 @@ class ScheduleController {
     const checkUserProvider = await User.findOne({
       where: { id: req.userId, provider: true },
     });
-    
+
     if (!checkUserProvider) {
       res.status(401).json({ error: 'User is not a provider' });
     }
@@ -17,7 +17,7 @@ class ScheduleController {
     //2019-09-10 23:59:59
     const { date } = req.query;
     const parsedDate = parseISO(date);
-    
+
     const appointments = await Appointment.findAll({
       where: {
         provider_id: req.userId,
@@ -26,6 +26,13 @@ class ScheduleController {
           [Op.between]: [startOfDay(parsedDate), endOfDay(parsedDate)],
         },
       },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name'],
+        }
+      ],
       order: ['date'],
     });
 

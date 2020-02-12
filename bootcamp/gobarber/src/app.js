@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 import Youch from 'youch';
 import * as Sentry from '@sentry/node';
 import 'express-async-errors';
@@ -25,6 +26,9 @@ class App {
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
 
+    // Permite o acesso de qualquer aplicacao a nossa API
+    this.server.use(cors());
+
     // Aplicacao pode receber requisicoes no formato JSON
     this.server.use(express.json());
 
@@ -42,7 +46,7 @@ class App {
         const errors = await new Youch(err, req).toJSON();
         return res.status(500).json(errors);
       }
-      
+
       return res.status(500).json({ error: 'Internal server error' });
     });
   }
