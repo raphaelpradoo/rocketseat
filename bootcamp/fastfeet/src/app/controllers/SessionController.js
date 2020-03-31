@@ -5,6 +5,7 @@ import User from '../models/User';
 import authConfig from '../../config/auth';
 
 class SessionController {
+  // Store - Método para CRIAR
   async store(req, res) {
     const schema = Yup.object().shape({
       email: Yup.string().email().required(),

@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import User from '../models/User';
 
 class UserController {
+  // Store - Método para CRIAR
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -32,6 +33,7 @@ class UserController {
     });
   }
 
+  // Update - Método para ATUALIZAR
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
