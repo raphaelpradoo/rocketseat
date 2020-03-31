@@ -62,6 +62,7 @@ class RecipientController {
 
     const recipient = await Recipient.findByPk(req.params.id);
 
+    // Erro. Usuário não foi encontrado.
     if (!recipient) {
       return res.status(404).json({ error: 'Recipient not found.' });
     }
@@ -76,7 +77,7 @@ class RecipientController {
       city,
       state,
       cep,
-    } = await Recipient.update(req.body);
+    } = await recipient.update(req.body);
 
     return res.json({
       id,
