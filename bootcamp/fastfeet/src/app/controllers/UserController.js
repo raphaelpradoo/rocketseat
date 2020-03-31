@@ -9,6 +9,7 @@ class UserController {
       password: Yup.string().required().min(6),
     });
 
+    // Erro de validação. Alguns dos campos não estão no padrão
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails.' });
     }
@@ -16,10 +17,12 @@ class UserController {
     // Verifica se ja existe um usuario com este e-mail
     const userExists = await User.findOne({ where: { email: req.body.email } });
 
+    // Erro. Não é possivel salvar usuários com o e-mails repetidos.
     if (userExists) {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
+    // Tudo certo para CRIAR o Usuário
     const { id, name, email } = await User.create(req.body);
 
     return res.json({
@@ -44,29 +47,35 @@ class UserController {
       ),
     });
 
+    // Erro de validação. Alguns dos campos não estão no padrão
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails.' });
     }
 
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(req.userId);
+    const user = await User.findOne({ where: { email: req.body.email } });
 
     if (email !== user.email) {
+      // Verifica se ja existe um usuario com este e-mail
       const userExists = await User.findOne({ where: { email } });
 
+      // Erro. Não é possivel salvar usuários com o e-mails repetidos.
       if (userExists) {
         return res.status(400).json({ error: 'User already exists.' });
       }
     }
 
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      // Erro. Não é possivel alterar o Usuário, pois a senha digitada
+      // não é igual a senha salva no banco de dados
       return res.status(401).json({ error: 'Password does not match.' });
     }
 
+    // Tudo certo para ATUALIZAR o Usuário
     await user.update(req.body);
 
-    const { id, name } = await User.findByPk(req.userId);
+    const { id, name } = await User.findOne({ where: { email } });
 
     return res.json({
       id,

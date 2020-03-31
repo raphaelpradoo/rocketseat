@@ -11,6 +11,7 @@ class SessionController {
       password: Yup.string().required(),
     });
 
+    // Erro de validação. Alguns dos campos não estão no padrão
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails.' });
     }
@@ -19,10 +20,12 @@ class SessionController {
 
     const user = await User.findOne({ where: { email } });
 
+    // Erro. Usuário não foi encontrado.
     if (!user) {
       return res.status(401).json({ error: 'User not found.' });
     }
 
+    // Erro de senha. A senha digitada não não é igual a senha salva no banco
     if (!(await user.checkPassword(password))) {
       return res.status(401).json({ error: 'Password does not match.' });
     }
