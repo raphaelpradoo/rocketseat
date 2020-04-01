@@ -5,8 +5,8 @@ class Deliveryman extends Model {
     super.init(
       {
         name: Sequelize.STRING,
-        // avatar_id: Sequelize.INTEGER,
         email: Sequelize.STRING,
+        deleted_at: Sequelize.DATE,
       },
       {
         sequelize,

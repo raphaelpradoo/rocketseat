@@ -31,6 +31,9 @@ routes.put('/recipients/:id', RecipientController.update);
 routes.post('/files', upload.single('file'), FileController.store);
 
 // Rotas de Entregadores
+routes.get('/deliverymen', DeliverymanController.index);
 routes.post('/deliverymen', DeliverymanController.store);
+routes.put('/deliverymen/:id', DeliverymanController.update);
+routes.delete('/deliverymen/:id', DeliverymanController.delete);
 
 export default routes;
