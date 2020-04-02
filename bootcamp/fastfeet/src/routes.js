@@ -15,37 +15,46 @@ import authMiddleware from './app/middlewares/auth';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-// Rotas de Sessão
+// Sessão
 routes.post('/sessions', SessionController.store);
 
-// Rotas de Usuário
+// Usuários
 routes.post('/users', UserController.store);
 routes.put('/users', UserController.update);
 
-// Rotas para Entregadores verificar suas Encomendas. Não necessita de Autenticação via Token JWT
+// Tarefa dos Entregadores
 routes.get('/deliverymen/:id', DeliverymanFeaturesController.index);
 routes.get(
   '/deliverymen/:id/deliveries',
   DeliverymanFeaturesController.deliveries
 );
+routes.put(
+  '/deliverymen/:id_deliveryman/receive/:id_delivery',
+  DeliverymanFeaturesController.receive
+);
+routes.put(
+  '/deliverymen/:id_deliveryman/close/:id_delivery',
+  DeliverymanFeaturesController.close
+);
 
-// Definição do Middleware de Autenticação via Token JWT para todas as rotas abaixo desta linha
+// Middleware de Autenticação via Token JWT
+// para todas as rotas abaixo desta linha
 routes.use(authMiddleware);
 
-// Rotas de Destinatário
+// Destinatário
 routes.post('/recipients', RecipientController.store);
 routes.put('/recipients/:id', RecipientController.update);
 
-// Rotas de Arquivos
+// Arquivos
 routes.post('/files', upload.single('file'), FileController.store);
 
-// Rotas de Entregadores
+// Entregadores
 routes.get('/deliverymen', DeliverymanController.index);
 routes.post('/deliverymen', DeliverymanController.store);
 routes.put('/deliverymen/:id', DeliverymanController.update);
 routes.delete('/deliverymen/:id', DeliverymanController.delete);
 
-// Rotas de Entregas
+// Entregas
 routes.get('/deliveries', DeliveryController.index);
 routes.post('/deliveries', DeliveryController.store);
 routes.put('/deliveries/:id', DeliveryController.update);

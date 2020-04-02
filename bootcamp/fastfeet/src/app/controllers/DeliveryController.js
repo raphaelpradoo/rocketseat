@@ -1,10 +1,9 @@
 import * as Yup from 'yup';
-import { isPast, parseISO, isBefore, isAfter } from 'date-fns';
 
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
-import File from '../models/File';
 import Delivery from '../models/Delivery';
+import File from '../models/File';
 
 import CreateDeliveryMail from '../jobs/CreateDeliveryMail';
 import Queue from '../../lib/Queue';
@@ -18,13 +17,34 @@ class DeliveryController {
     const deliveries = await Delivery.findAll({
       where: { canceled_at: null, end_date: null },
       order: ['id'],
-      limit: 20,
+      // limit: 20,
       attributes: ['id', 'product'],
       include: [
         {
-          model: File,
-          as: 'signature',
-          attributes: ['id', 'path', 'url'],
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'id',
+            'name',
+            'address',
+            'number',
+            'complement',
+            'city',
+            'state',
+            'cep',
+          ],
+        },
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name', 'email'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
         },
       ],
     });
@@ -37,10 +57,9 @@ class DeliveryController {
     const schema = Yup.object().shape({
       recipient_id: Yup.number().required(),
       deliveryman_id: Yup.number().required(),
-      signature_id: Yup.number().nullable(),
       product: Yup.string().required().max(255),
       canceled_at: Yup.date().nullable(),
-      start_date: Yup.date().nullable(false),
+      start_date: Yup.date().nullable(),
       end_date: Yup.date().nullable(),
     });
 
@@ -50,7 +69,7 @@ class DeliveryController {
     }
 
     // Recebendo alguns campos do corpo da requisição
-    const { recipient_id, deliveryman_id, signature_id, start_date } = req.body;
+    const { recipient_id, deliveryman_id, start_date } = req.body;
 
     // Erro. Destinatário não encontrado.
     const recipient = await Recipient.findByPk(recipient_id);
@@ -69,39 +88,6 @@ class DeliveryController {
     // Erro. Entregador foi excluido
     if (deliveryman && deliveryman.deleted_at) {
       return res.status(400).json({ error: 'Deliveryman was deleted.' });
-    }
-
-    // Se tiver assinatura, verificar se o arquivo existe
-    const signature = signature_id ? await File.findByPk(signature_id) : null;
-    // Erro. Assinatura não encontrada.
-    if (!signature) {
-      return res.status(404).json({ error: 'Signature file not found.' });
-    }
-
-    // Erro. Não é possivel criar Entrega com data anterior à agora.
-    if (isPast(parseISO(start_date))) {
-      return res.status(400).json({ error: 'Past dates are not permitted.' });
-    }
-
-    // Erro de Validação. O campo start_date deve estar entre 08h e 18h.
-    const delivery_time = parseISO(start_date);
-    const start = new Date();
-    start.setHours(8);
-    start.setMinutes(0);
-    start.setSeconds(0);
-
-    const end = new Date();
-    end.setHours(18);
-    end.setMinutes(0);
-    end.setSeconds(0);
-
-    const before = isBefore(delivery_time, start);
-    const after = isAfter(delivery_time, end);
-
-    if (before || after) {
-      return res
-        .status(400)
-        .json({ error: 'Delivery time must be between 8 am and 6 pm.' });
     }
 
     // Tudo certo para CRIAR a Entrega
@@ -116,7 +102,6 @@ class DeliveryController {
       id,
       recipient,
       deliveryman,
-      signature,
       product,
       canceled_at,
       start_date,
@@ -129,7 +114,6 @@ class DeliveryController {
     const schema = Yup.object().shape({
       recipient_id: Yup.number().required(),
       deliveryman_id: Yup.number().required(),
-      signature_id: Yup.number().nullable(),
       product: Yup.string().required().max(255),
       canceled_at: Yup.date().nullable(),
     });
@@ -140,7 +124,7 @@ class DeliveryController {
     }
 
     // Recebendo alguns campos do corpo da requisição
-    const { recipient_id, deliveryman_id, signature_id } = req.body;
+    const { recipient_id, deliveryman_id } = req.body;
 
     const delivery = await Delivery.findByPk(req.params.id);
 
@@ -175,13 +159,6 @@ class DeliveryController {
       return res.status(400).json({ error: 'Deliveryman was deleted.' });
     }
 
-    // Se tiver assinatura, verificar se o arquivo existe
-    const signature = signature_id ? await File.findByPk(signature_id) : null;
-    // Erro. Assinatura não encontrada.
-    if (!signature) {
-      return res.status(404).json({ error: 'Signature file not found.' });
-    }
-
     // Tudo certo para ALTERAR a Entrega
     const { id, product } = await delivery.update(req.body, {
       where: { id: req.params.id },
@@ -192,7 +169,6 @@ class DeliveryController {
       product,
       recipient,
       deliveryman,
-      signature,
     });
   }
 
@@ -205,16 +181,23 @@ class DeliveryController {
       return res.status(404).json({ error: 'Delivery not found.' });
     }
 
-    // Erro. Entrega está cancelada
+    // Erro. Entrega já está cancelada
     if (delivery.canceled_at) {
       return res
         .status(400)
         .json({ error: 'Delivery has already been canceled.' });
     }
 
+    // Erro. Verificar se a Entrega já foi Entregue (end_date != null)
+    if (delivery.end_date) {
+      return res
+        .status(400)
+        .json({ error: 'Delivery has already been delivered.' });
+    }
+
     // Tudo certo para Finalizar a Entrega
-    // Marcar a coluna "end_date" com a data da entrega
-    delivery.end_date = new Date();
+    // Marcar a coluna "canceled_at" com a data do CANCELAMENTO
+    delivery.canceled_at = new Date();
 
     await delivery.save();
 
