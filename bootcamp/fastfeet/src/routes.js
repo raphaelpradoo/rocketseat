@@ -8,6 +8,7 @@ import RecipientController from './app/controllers/RecipientController';
 import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveryController from './app/controllers/DeliveryController';
+import DeliverymanFeaturesController from './app/controllers/DeliverymanFeaturesController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -20,6 +21,13 @@ routes.post('/sessions', SessionController.store);
 // Rotas de Usuário
 routes.post('/users', UserController.store);
 routes.put('/users', UserController.update);
+
+// Rotas para Entregadores verificar suas Encomendas. Não necessita de Autenticação via Token JWT
+routes.get('/deliverymen/:id', DeliverymanFeaturesController.index);
+routes.get(
+  '/deliverymen/:id/deliveries',
+  DeliverymanFeaturesController.deliveries
+);
 
 // Definição do Middleware de Autenticação via Token JWT para todas as rotas abaixo desta linha
 routes.use(authMiddleware);
