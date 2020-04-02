@@ -6,6 +6,9 @@ import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 import Delivery from '../models/Delivery';
 
+import CreateDeliveryMail from '../jobs/CreateDeliveryMail';
+import Queue from '../../lib/Queue';
+
 class DeliveryController {
   // Index - Método para LISTAR todas Encomendas
   async index(req, res) {
@@ -106,6 +109,9 @@ class DeliveryController {
       req.body
     );
 
+    // Enviar e-mail para o Entregador confirmando a Entrega.
+    await Queue.add(CreateDeliveryMail.key, { deliveryman });
+
     return res.json({
       id,
       recipient,
@@ -116,8 +122,6 @@ class DeliveryController {
       start_date,
       end_date,
     });
-
-    // Enviar e-mail para o Entregador confirmando a Entrega.
   }
 
   // Update - Método para ATUALIZAR uma Encomenda
