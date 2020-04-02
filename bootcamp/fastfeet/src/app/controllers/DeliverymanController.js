@@ -5,6 +5,8 @@ import Deliveryman from '../models/Deliveryman';
 class DeliverymanController {
   // Index - Método para LISTAR
   async index(req, res) {
+    // Filtra os Entregadores que:
+    // - Não foram excluidos (deleted_at = null)
     const deliverymen = await Deliveryman.findAll({
       where: { deleted_at: null },
       order: ['name'],
@@ -19,7 +21,6 @@ class DeliverymanController {
       ],
     });
 
-    // Só retorna Entregadores que não foram excluidos (deleted_at !== null)
     return res.json(deliverymen);
   }
 
