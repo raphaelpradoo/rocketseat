@@ -10,6 +10,7 @@ import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveryController from './app/controllers/DeliveryController';
 import DeliverymanFeaturesController from './app/controllers/DeliverymanFeaturesController';
 import DeliveryProblemController from './app/controllers/DeliveryProblemController';
+import CompanyFeaturesController from './app/controllers/CompanyFeaturesController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -39,6 +40,7 @@ routes.put(
 );
 
 // Problemas na Entrega
+routes.get('/delivery/:id/problems', DeliveryProblemController.index);
 routes.post('/delivery/:id/problems', DeliveryProblemController.store);
 
 // Middleware de Autenticação via Token JWT
@@ -63,5 +65,9 @@ routes.get('/deliveries', DeliveryController.index);
 routes.post('/deliveries', DeliveryController.store);
 routes.put('/deliveries/:id', DeliveryController.update);
 routes.delete('/deliveries/:id', DeliveryController.delete);
+
+// Tarefa da Empresa
+routes.get('/problem-deliveries', CompanyFeaturesController.index);
+routes.delete('/problem/:id/cancel-delivery', CompanyFeaturesController.delete);
 
 export default routes;

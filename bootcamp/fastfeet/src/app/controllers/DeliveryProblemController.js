@@ -4,6 +4,29 @@ import Delivery from '../models/Delivery';
 import DeliveryProblem from '../models/DeliveryProblem';
 
 class DeliveryProblemController {
+  // Index - Método para Listar todos os Problemas de uma Encomenda
+  async index(req, res) {
+    // Erro. Entrega não encontrada.
+    const delivery = await Delivery.findByPk(req.params.id);
+
+    if (!delivery) {
+      return res.status(404).json({ error: 'Delivery not found.' });
+    }
+
+    // Verifica se a Entrega tem algum Problema
+    const problems = await DeliveryProblem.findAll({
+      where: { delivery_id: req.params.id },
+      order: ['id'],
+      attributes: ['id', 'description'],
+    });
+
+    if (!problems) {
+      return res.status(404).json({ error: 'Delivery no problem.' });
+    }
+
+    return res.json(problems);
+  }
+
   // Store - Método para CRIAR um Problema de Encomenda
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -14,9 +37,6 @@ class DeliveryProblemController {
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails.' });
     }
-
-    // Recebendo os campos do corpo da requisição
-    // const { description } = req.body;
 
     // Erro. Entrega não encontrada.
     const delivery = await Delivery.findByPk(req.params.id);
@@ -46,21 +66,15 @@ class DeliveryProblemController {
 
     // Recebendo os campos do corpo da requisição
     const { description } = req.body;
+    const delivery_id = delivery.id;
 
     // Tudo certo para CRIAR o Problema da Entrega
-    // const { id, description } = await DeliveryProblem.create(req.body);
-
-    const problem = new DeliveryProblem();
-    problem.delivery_id = delivery.id;
-    problem.description = description;
-
-    console.log(problem);
-
-    await DeliveryProblem.create({ problem, delivery });
-
-    return res.json({
-      problem,
+    const problem = await DeliveryProblem.create({
+      delivery_id,
+      description,
     });
+
+    return res.json(problem);
   }
 }
 
