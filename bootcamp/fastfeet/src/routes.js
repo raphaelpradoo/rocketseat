@@ -9,6 +9,7 @@ import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveryController from './app/controllers/DeliveryController';
 import DeliverymanFeaturesController from './app/controllers/DeliverymanFeaturesController';
+import DeliveryProblemController from './app/controllers/DeliveryProblemController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -36,6 +37,9 @@ routes.put(
   '/deliverymen/:id_deliveryman/close/:id_delivery',
   DeliverymanFeaturesController.close
 );
+
+// Problemas na Entrega
+routes.post('/delivery/:id/problems', DeliveryProblemController.store);
 
 // Middleware de Autenticação via Token JWT
 // para todas as rotas abaixo desta linha
