@@ -13,6 +13,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
         allowNull: false,
+        unique: true,
       },
       description: {
         type: Sequelize.STRING(1000),

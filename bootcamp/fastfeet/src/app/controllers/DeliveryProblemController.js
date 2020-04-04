@@ -45,6 +45,17 @@ class DeliveryProblemController {
       return res.status(404).json({ error: 'Delivery not found.' });
     }
 
+    // Erro. Entrega já foi cadastrado um Problema para esta Entrega.
+    const some_problem = await DeliveryProblem.findOne({
+      where: { delivery_id: delivery.id },
+    });
+
+    if (some_problem) {
+      return res
+        .status(400)
+        .json({ error: 'Delivery already has a problem registered.' });
+    }
+
     // Erro. Entrega não foi Aberta (start_date = null)
     if (delivery.start_date === null) {
       return res
