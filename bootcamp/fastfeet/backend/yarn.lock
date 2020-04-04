@@ -955,7 +955,7 @@ execa@^0.7.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
-express-handlebars@^4.0.0, express-handlebars@^4.0.1:
+express-handlebars@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-4.0.1.tgz#2b97f6a1d3b20a4168c60105c6b30455b285c5ac"
   integrity sha512-VYOpy7pdHipCCh5amBvYYm9Rx3849vxc2JQPOf8Cko1kyGfNL4ZaKaEcuzHaZJUAvtnnqv64MSqRS8oAWY9D5w==
@@ -963,6 +963,17 @@ express-handlebars@^4.0.0, express-handlebars@^4.0.1:
     glob "^7.1.6"
     graceful-fs "^4.2.3"
     handlebars "^4.7.4"
+    object.assign "^4.1.0"
+    promise "^8.1.0"
+
+express-handlebars@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-4.0.2.tgz#d5f7df7df256066f3882247536f5bf502dd7781b"
+  integrity sha512-Ps3IPb24F9IbBEIOWfoWgJQonm5qeBN9pUslR7YViA5vkVjgVYnHsxlv4nNMDdYAsY/U+DjIQ78ZS8Q7QCnBbA==
+  dependencies:
+    glob "^7.1.6"
+    graceful-fs "^4.2.3"
+    handlebars "^4.7.5"
     object.assign "^4.1.0"
     promise "^8.1.0"
 
@@ -1230,6 +1241,18 @@ handlebars@^4.7.4:
     neo-async "^2.6.0"
     source-map "^0.6.1"
     yargs "^15.3.1"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
+handlebars@^4.7.5:
+  version "4.7.6"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.6.tgz#d4c05c1baf90e9945f77aa68a7a219aa4a7df74e"
+  integrity sha512-1f2BACcBfiwAfStCKZNrUCgqNZkGsAT7UM3kkYtXuLo0KnaVfjKOyf7PRzB6++aK9STyT1Pd2ZCPe3EGOXleXA==
+  dependencies:
+    minimist "^1.2.5"
+    neo-async "^2.6.0"
+    source-map "^0.6.1"
+    wordwrap "^1.0.0"
   optionalDependencies:
     uglify-js "^3.1.4"
 
@@ -3167,6 +3190,11 @@ word-wrap@~1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
   integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
+
+wordwrap@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
+  integrity sha1-J1hIEIkUVqQXHI0CJkQa3pDLyus=
 
 wrap-ansi@^5.1.0:
   version "5.1.0"
