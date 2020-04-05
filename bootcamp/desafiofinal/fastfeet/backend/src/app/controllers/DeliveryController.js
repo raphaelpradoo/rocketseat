@@ -140,7 +140,12 @@ class DeliveryController {
     );
 
     // Enviar e-mail para o Entregador confirmando a Entrega.
-    await Queue.add(CreateDeliveryMail.key, { deliveryman });
+    await Queue.add(CreateDeliveryMail.key, {
+      deliveryman: deliveryman.name,
+      email: deliveryman.email,
+      product,
+      recipient,
+    });
 
     return res.json({
       id,

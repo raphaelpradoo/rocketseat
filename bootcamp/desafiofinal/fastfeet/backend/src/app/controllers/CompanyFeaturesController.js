@@ -1,5 +1,10 @@
 import Delivery from '../models/Delivery';
 import DeliveryProblem from '../models/DeliveryProblem';
+import Deliveryman from '../models/Deliveryman';
+import Recipient from '../models/Recipient';
+
+import CancellationDeliveryMail from '../jobs/CancellationDeliveryMail';
+import Queue from '../../lib/Queue';
 
 class CompanyFeaturesController {
   // Index - Método para Listar as Entregas com Problema
@@ -21,14 +26,29 @@ class CompanyFeaturesController {
 
   // Delete - Método para DELETAR uma Entregas com Problema
   async delete(req, res) {
-    const delivery_problem = await DeliveryProblem.findByPk(req.params.id);
+    const delivery_problem = await DeliveryProblem.findOne({
+      where: {
+        delivery_id: req.params.id,
+      },
+    });
 
     // Erro. Entrega com Problema não foi encontrada.
     if (!delivery_problem) {
       return res.status(404).json({ error: 'Delivery Problem not found.' });
     }
 
-    const delivery = await Delivery.findByPk(delivery_problem.delivery_id);
+    const delivery = await Delivery.findOne({
+      where: {
+        id: delivery_problem.delivery_id,
+      },
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['name', 'email'],
+        },
+      ],
+    });
 
     // Erro. Entrega não foi encontrada.
     if (!delivery) {
@@ -55,9 +75,16 @@ class CompanyFeaturesController {
 
     await delivery.save();
 
-    // Enviar e-mail para o Entregador informando o Cancelamento.
-    // await Queue.add(CreateDeliveryMail.key, { deliveryman });
+    const recipient = await Recipient.findByPk(delivery.recipient_id);
 
+    // Enviar e-mail para o Entregador informando o Cancelamento.
+    await Queue.add(CancellationDeliveryMail.key, {
+      deliveryman: delivery.deliveryman.name,
+      email: delivery.deliveryman.email,
+      recipient,
+      product: delivery.product,
+      problem: delivery_problem.description,
+    });
     return res.json({ delivery });
   }
 }
