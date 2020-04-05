@@ -1,9 +1,11 @@
 import * as Yup from 'yup';
+import { isToday } from 'date-fns';
 
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
 import Delivery from '../models/Delivery';
 import File from '../models/File';
+import DeliveryCount from '../models/DeliveryCount';
 
 import CreateDeliveryMail from '../jobs/CreateDeliveryMail';
 import Queue from '../../lib/Queue';
@@ -88,6 +90,48 @@ class DeliveryController {
     // Erro. Entregador foi excluido
     if (deliveryman && deliveryman.deleted_at) {
       return res.status(400).json({ error: 'Deliveryman was deleted.' });
+    }
+
+    // Verificar a contagem de Entregas por dia
+    const hasDelivery = await DeliveryCount.findAll({
+      where: { deliveryman_id },
+      limit: 1,
+      order: [['created_at', 'DESC']],
+      attributes: ['id', 'deliveryman_id', 'delivery_date', 'count'],
+    });
+
+    if (hasDelivery.length > 0) {
+      const delivery_count = hasDelivery[0];
+
+      // Verificar se já tem entregas hoje
+      if (isToday(delivery_count.delivery_date)) {
+        // Erro. Não pode exceder o limite de 5 entregas por dia.
+        if (delivery_count.count >= 5) {
+          return res
+            .status(400)
+            .json({ error: 'Daily delivery limit cannot exceed 5.' });
+        }
+
+        // Incrementa a quantidade de entregas daquela data.
+        delivery_count.update({
+          where: { id: hasDelivery[0].id },
+          count: hasDelivery[0].count + 1,
+        });
+      } else {
+        // Se nao tiver entregas para este dia, criar linha na tabela delivery_counts
+        await DeliveryCount.create({
+          deliveryman_id,
+          delivery_date: new Date(),
+          count: 1,
+        });
+      }
+    } else {
+      // Se nao tiver entregas para qualquer dia, criar linha na tabela delivery_counts
+      await DeliveryCount.create({
+        deliveryman_id,
+        delivery_date: new Date(),
+        count: 1,
+      });
     }
 
     // Tudo certo para CRIAR a Entrega
