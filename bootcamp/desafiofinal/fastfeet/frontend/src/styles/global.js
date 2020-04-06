@@ -24,7 +24,7 @@ export default createGlobalStyle`
   }
 
   body, input, button {
-    font: 14px 'Roboto', sans-sefif;
+    font: 14px 'Roboto', arial;
   }
 
   a {
