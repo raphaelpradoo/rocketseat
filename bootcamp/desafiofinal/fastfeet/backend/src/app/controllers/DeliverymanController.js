@@ -1,16 +1,27 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
+
 import File from '../models/File';
 import Deliveryman from '../models/Deliveryman';
 
 class DeliverymanController {
   // Index - Método para LISTAR
   async index(req, res) {
+    // Recebendo os Query Parameters
+    const { page = 1, name } = req.query;
+
     // Filtra os Entregadores que:
     // - Não foram excluidos (deleted_at = null)
     const deliverymen = await Deliveryman.findAll({
-      where: { deleted_at: null },
+      where: {
+        deleted_at: null,
+        name: {
+          [Op.iLike]: name ? `%${name}%` : '%%',
+        },
+      },
       order: ['name'],
       limit: 20,
+      offset: (page - 1) * 20,
       attributes: ['id', 'name', 'email'],
       include: [
         {

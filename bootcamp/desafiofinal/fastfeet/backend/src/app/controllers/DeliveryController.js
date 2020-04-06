@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import { isToday } from 'date-fns';
+import { Op } from 'sequelize';
 
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
@@ -13,13 +14,23 @@ import Queue from '../../lib/Queue';
 class DeliveryController {
   // Index - Método para LISTAR todas Encomendas
   async index(req, res) {
+    // Recebendo os Query Parameters
+    const { page = 1, product } = req.query;
+
     // Filtra as Encomendas que:
     // - Não foram canceladas (canceled_at = null)
     // - Não estão Entregues (end_data = null)
     const deliveries = await Delivery.findAll({
-      where: { canceled_at: null, end_date: null },
+      where: {
+        canceled_at: null,
+        end_date: null,
+        product: {
+          [Op.iLike]: product ? `%${product}%` : '%%',
+        },
+      },
       order: ['id'],
-      // limit: 20,
+      limit: 20,
+      offset: (page - 1) * 20,
       attributes: ['id', 'product'],
       include: [
         {
