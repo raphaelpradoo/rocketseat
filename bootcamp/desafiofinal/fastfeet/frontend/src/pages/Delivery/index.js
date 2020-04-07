@@ -1,14 +1,28 @@
 import React from 'react';
 import api from '~/services/api';
 
-import { Container } from './styles';
+import { Container, Title, Actions, Find, Add } from './styles';
 
 export default function Delivery() {
-  api.get('deliverymen');
+  // Buscando as Encomendas do Backend
+  api.get('deliveries');
 
   return (
     <Container>
-      <h1>Delivery</h1>
+      <Title>Gerenciando encomendas</Title>
+      <Actions>
+        <Find>
+          <input
+            type="text"
+            name="find_delivery"
+            id="find_delivery"
+            placeholder="Buscar por encomendas"
+          />
+        </Find>
+        <Add>
+          <button type="submit">CADASTRAR</button>
+        </Add>
+      </Actions>
     </Container>
   );
 }

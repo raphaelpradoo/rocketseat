@@ -40,8 +40,4 @@ export default createGlobalStyle`
   button {
     cursor: pointer;
   }
-
-  img {
-    padding-bottom: 20px;
-  }
 `;

@@ -18,14 +18,16 @@ export const Content = styled.div`
     align-items: center;
 
     img {
+      margin-top: 20px;
       margin-right: 20px;
       padding-right: 20px;
-      border-right: 1px solid #eee;
+      border-right: 1px solid red;
     }
 
     a {
       font-weight: bold;
-      color: '#7159c1';
+      color: #333;
+      justify-content: space-between;
     }
 
     aside {
