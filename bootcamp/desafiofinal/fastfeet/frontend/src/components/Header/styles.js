@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+// import { colors } from '~/styles/colors';
 
 export const Container = styled.div`
   background: #fff;
@@ -21,18 +22,37 @@ export const Content = styled.div`
       margin-top: 20px;
       margin-right: 20px;
       padding-right: 20px;
-      border-right: 1px solid red;
-    }
-
-    a {
-      font-weight: bold;
-      color: #333;
-      justify-content: space-between;
+      border-right: 1px solid #333;
     }
 
     aside {
       display: flex;
       align-items: center;
+    }
+  }
+`;
+
+export const Navigation = styled.div`
+  padding-left: 30px;
+  height: 32px;
+  border-left: 1px solid #ddd;
+
+  display: flex;
+  align-items: center;
+
+  a {
+    margin-right: 20px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #999;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #834323;
+    }
+
+    &.active {
+      color: #444;
     }
   }
 `;
@@ -52,11 +72,19 @@ export const Profile = styled.div`
       color: #333;
     }
 
-    a {
+    button {
       display: block;
       margin-top: 2px;
       font-size: 12px;
-      color: #999;
+      color: red;
+      background: transparent;
+      border: 0;
     }
+  }
+
+  img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
   }
 `;
