@@ -1,4 +1,0 @@
-"react-navigation": "^4.1.1",
-
-jorge@cliente.com
-123123
